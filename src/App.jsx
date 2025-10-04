@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import './App.css'
+import caballoIcon from './assets/knight.png'
 
 function App() {
   const [size, setSize] = useState(0)
   const [showBoard, setShowBoard] = useState(false)
   const [board, setBoard] = useState([])
+  const [oldSelect, setOldSelect] = useState(null)
 
   const crearBoard = (size) => {
     const newBoard = []
@@ -18,14 +20,36 @@ function App() {
     return newBoard
   }
 
-  const menuManager = () => {
+  const menuManager = (size) => {
     if (sizeValid(size)) {
       const newBoard = crearBoard(size)
       setBoard(newBoard)
       setShowBoard(true)
+      setOldSelect(null)
+      setSize(size)
     } else {
       alert('Por favor, introduce un tamaño de tablero válido (5-7).')
     }
+  }
+
+  //este es la funcion para seleccionar el indice de la matriz por si acaso
+  const seleccionarTablero = (fila, col) => {
+    board[fila][col] = 1
+    setBoard([...board])
+
+    if (!oldSelect) {
+      setOldSelect({ fila, col })
+    } else { // por favor realizar la restrccion para que no se setee un 0 en el mismo indice para que no se quite el caballo
+      board[oldSelect.fila][oldSelect.col] = 0
+      setBoard([...board])
+      setOldSelect({ fila, col })
+    }
+  }
+
+  const getClaseCelda = (val) => {
+    if (val === 0) return ''
+    if (val === 1) return 'caballo-pos'
+    return `move-${val}`
   }
 
   if (showBoard) {
@@ -38,8 +62,10 @@ function App() {
               {board.map((fila, i) => (
                 <tr key={i}>
                   {fila.map((col, ci) => (
-                    <td key={ci}>
-                      {col === 0 ? '' : col}
+                    <td key={ci} 
+                      className={getClaseCelda(col)} 
+                      onClick={() => seleccionarTablero(i, ci)}>
+                      {col === 0 ? '' : col === 1 ? (<img src={caballoIcon} alt="caballo" className='caballo-icon' />) : col}
                     </td>
                   ))}
                 </tr>
@@ -51,6 +77,7 @@ function App() {
           setShowBoard(false)
           setSize(0)
           setBoard([])
+          setOldSelect(null)
         }}>
           Volver
         </button>
@@ -59,25 +86,23 @@ function App() {
   }
 
   return (
-    <div>
+    <div className='chess-container'>
       <h1>Knight's Tour - Recorrido del Caballo</h1>
-      <div className="input-container">
-        <div className="input-row">
-          <label htmlFor="size">Tamaño del tablero: </label>
-          <input 
-            type="number" 
-            value={size} 
-            onChange={(e) => setSize(parseInt(e.target.value))} 
-          />
-          <button className="volver-button" onClick={menuManager}>Iniciar Recorrido</button>
+        <div className='tableros-validos'>
+          <p>Tableros válidos:</p>
+          <div className='button-container'>
+            <button onClick={() => menuManager(4)}>4x4</button>
+            <button onClick={() => menuManager(5)}>5x5</button>
+            <button onClick={() => menuManager(6)}>6x6</button>
+            <button onClick={() => menuManager(7)}>7x7</button>
+          </div>
         </div>
-      </div>
     </div>
   )
 }
 
 function sizeValid(size) {
-  return size >= 5 && size < 8
+  return size >= 4 && size < 8
 }
 
 export default App

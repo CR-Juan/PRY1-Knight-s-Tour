@@ -7,44 +7,51 @@ body {
     min-height: 100vh;
     margin: 0;
     padding: 20px;
+    /* Fondo de ajedrez */
+    background-image: 
+        linear-gradient(45deg, #f0d9b5 25%, transparent 25%),
+        linear-gradient(-45deg, #f0d9b5 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #f0d9b5 75%),
+        linear-gradient(-45deg, transparent 75%, #f0d9b5 75%);
+    background-size: 60px 60px;
+    background-position: 0 0, 0 30px, 30px -30px, -30px 0px;
+    background-color: #b58863;
+    animation: chessboardMove 20s linear infinite;
 }
 
-/* Agregar estilos para centrar los inputs */
-.input-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-    margin: 20px 0;
+/* Animación del tablero de ajedrez */
+@keyframes chessboardMove {
+    0% { 
+        background-position: 0 0, 0 30px, 30px -30px, -30px 0px;
+    }
+    100% { 
+        background-position: 60px 60px, 60px 90px, 90px 30px, 30px 60px;
+    }
 }
 
-.input-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+/* Overlay */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(26, 25, 24, 0.7);
+    pointer-events: none;
+    z-index: -1;
 }
 
-.input-row input {
-    padding: 8px 12px;
-    border: 2px solid #333;
-    border-radius: 4px;
-    font-size: 16px;
-    text-align: center;
-}
-
-.input-row button {
-    padding: 10px 20px;
-    background-color: #4d4fce;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.input-row button:hover {
-    background-color: #3a3ca3;
+/* Ajustar colores del título para contrastar con el fondo de ajedrez */
+h1 {
+    color: #f0d9b5;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
+    font-size: 3.2em;
+    line-height: 1.1;
+    background: rgba(26, 25, 24, 0.8);
+    padding: 20px;
+    border-radius: 15px;
+    border: 2px solid #f0d9b5;
 }
 
 .board {
@@ -99,14 +106,15 @@ body {
     background-color: #3a3ca3;
 }
 
-/* Imagen del caballo */
-.knight-image {
-    width: 45px;
-    height: 45px;
+.caballo-icon {
+    width: 40px;   
+    height: 40px; 
     display: block;
     margin: 0 auto;
+    transition: all 0.3s ease;
 }
 
+/* Contenedor modal para las instrucciones */
 .modal {
     position: fixed;
     top: 0;
@@ -130,4 +138,130 @@ body {
 .modal-content h2 {
     margin-top: 0;
     color: red;
+}
+
+/* Contenedor principal*/
+.tableros-validos {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  padding: 40px 20px;
+  background: rgba(26, 25, 24, 0.95);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  margin: 20px;
+  border: 3px solid #f0d9b5;
+}
+
+.tableros-validos p {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0;
+  text-align: center;
+  color: #f0d9b5;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  letter-spacing: 1px;
+}
+
+.button-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 25px;
+}
+
+.button-container button {
+  width: 120px !important;
+  height: 120px !important;
+  border: 3px solid #b58863 !important;
+  border-radius: 15px !important;
+  background: linear-gradient(145deg, #f0d9b5, #e8d1a4) !important;
+  color: #1a1918 !important;
+  font-size: 24px !important;
+  font-weight: bold !important;
+  cursor: pointer;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4), 
+              inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+  position: relative;
+  overflow: hidden;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.button-container button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(181, 136, 99, 0.4), transparent);
+  transition: left 0.5s;
+}
+
+.button-container button:hover {
+  transform: translateY(-5px) scale(1.05) !important;
+  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.5), 
+              inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+  background: linear-gradient(145deg, #b58863, #a67c52) !important;
+  color: #f0d9b5 !important;
+  border-color: #f0d9b5 !important;
+}
+
+.button-container button:hover::before {
+  left: 100%;
+}
+
+.button-container button:active {
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3) !important;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tableros-validos {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.button-container button {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.button-container button:nth-child(1) { animation-delay: 0.1s; }
+.button-container button:nth-child(2) { animation-delay: 0.2s; }
+.button-container button:nth-child(3) { animation-delay: 0.3s; }
+.button-container button:nth-child(4) { animation-delay: 0.4s; }
+
+.board td.move-1 { background-color: #4dabf7 !important; color: white !important; }
+.board td.move-2 { background-color: #51cf66 !important; color: white !important; }
+.board td.move-3 { background-color: #ffd43b !important; color: black !important; }
+.board td.move-4 { background-color: #ff8787 !important; color: white !important; }
+
+@media (max-width: 600px) {
+  .button-container {
+    gap: 15px;
+  }
+  
+  .button-container button {
+    width: 100px !important;
+    height: 100px !important;
+    font-size: 20px !important;
+  }
+  
+  .tableros-validos p {
+    font-size: 24px;
+  }
 }
