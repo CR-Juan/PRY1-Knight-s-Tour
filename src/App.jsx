@@ -11,7 +11,7 @@ function App() {
     for (let i = 0; i < size; i++) {
       const row = []
       for (let j = 0; j < size; j++) {
-        row.push(-1)
+        row.push(0)
       }
       newBoard.push(row)
     }
@@ -39,7 +39,7 @@ function App() {
                 <tr key={i}>
                   {fila.map((col, ci) => (
                     <td key={ci}>
-                      {col === -1 ? '' : col}
+                      {col === 0 ? '' : col}
                     </td>
                   ))}
                 </tr>
@@ -47,7 +47,11 @@ function App() {
             </tbody>
           </table>
         )}
-        <button className="volver-button" onClick={() => setShowBoard(false)}>
+        <button className="volver-button" onClick={() => {
+          setShowBoard(false)
+          setSize(0)
+          setBoard([])
+        }}>
           Volver
         </button>
       </div>
