@@ -7,6 +7,8 @@ function App() {
   const [showBoard, setShowBoard] = useState(false)
   const [board, setBoard] = useState([])
   const [oldSelect, setOldSelect] = useState(null)
+  const [actualSelect, setActualSelect] = useState(null)
+  const [enCurso, setEnCurso] = useState(false)
 
   const crearBoard = (size) => {
     const newBoard = []
@@ -34,8 +36,11 @@ function App() {
 
   //este es la funcion para seleccionar el indice de la matriz por si acaso
   const seleccionarTablero = (fila, col) => {
+    if (enCurso) return
+
     board[fila][col] = 1
     setBoard([...board])
+    setActualSelect({ fila, col })
 
     if (!oldSelect) {
       setOldSelect({ fila, col })
@@ -44,6 +49,46 @@ function App() {
       setBoard([...board])
       setOldSelect({ fila, col })
     }
+  }
+
+  const animacion = (ms) => new Promise(res => setTimeout(res, ms))
+
+  const movimientoValido = (fila, col) => {
+    if (fila < 0 || fila >= size || col < 0 || col >= size || board[fila][col] !== 0) {
+      return false
+    }
+    return true
+  }
+
+  const backtrack = async (fila, col, pasos) => {
+    const MOVIMIENTOS = [[-2,1], [-1,2], [1,2], [2,1], [2,-1], [1,-2], [-1,-2], [-2,-1]]
+
+    if (pasos === size * size) {
+      return true
+    }
+
+    for (const move of MOVIMIENTOS) {
+      let nueva_fila = fila + move[0]
+      let nueva_col = col + move[1]
+
+      if (movimientoValido(nueva_fila, nueva_col)) {
+        board[nueva_fila][nueva_col] = 1
+        board[fila][col] = 2
+        setBoard([...board])
+
+        await animacion(5)
+
+        if (await backtrack(nueva_fila, nueva_col, pasos + 1)) {
+          return true
+        }
+        
+        board[nueva_fila][nueva_col] = 0
+        board[fila][col] = 1
+        await animacion(5)
+        setBoard([...board])
+      }
+    }
+    return false
   }
 
   const getClaseCelda = (val) => {
@@ -73,11 +118,22 @@ function App() {
             </tbody>
           </table>
         )}
+        <button className={`resolver-button`} onClick={ async() => { //realicen el coso de la animacion de carga mientras se resuelve, esta ya en el css, ademas hagan la alerta de que ya se resolvio o no se pudo resolver
+          if (actualSelect) {
+            if (enCurso) return
+            
+            setEnCurso(true)
+            backtrack(actualSelect.fila, actualSelect.col, 1)
+            
+          }
+        }}>Resolver</button>
         <button className="volver-button" onClick={() => {
           setShowBoard(false)
           setSize(0)
           setBoard([])
           setOldSelect(null)
+          setActualSelect(null)
+          setEnCurso(false)
         }}>
           Volver
         </button>
