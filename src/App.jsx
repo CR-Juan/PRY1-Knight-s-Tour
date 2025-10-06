@@ -2,6 +2,9 @@ import { useState } from 'react'
 import './App.css'
 import caballoIcon from './assets/knight.png'
 
+let detener = false
+
+
 function App() {
   const [size, setSize] = useState(0)
   const [showBoard, setShowBoard] = useState(false)
@@ -9,6 +12,7 @@ function App() {
   const [oldSelect, setOldSelect] = useState(null)
   const [actualSelect, setActualSelect] = useState(null)
   const [enCurso, setEnCurso] = useState(false)
+  
 
   const crearBoard = (size) => {
     const newBoard = []
@@ -30,7 +34,7 @@ function App() {
       setOldSelect(null)
       setSize(size)
     } else {
-      alert('Por favor, introduce un tamaño de tablero válido (5-7).')
+      alert('Por favor, introduce un tamaño de tablero válido (4-7).')
     }
   }
 
@@ -38,13 +42,15 @@ function App() {
   const seleccionarTablero = (fila, col) => {
     if (enCurso) return
 
-    board[fila][col] = 1
+     if (board[fila][col] === "x") return // Evita seleccionar la misma celda dos veces seguidas
+
+    board[fila][col] = "x"
     setBoard([...board])
     setActualSelect({ fila, col })
 
     if (!oldSelect) {
       setOldSelect({ fila, col })
-    } else { // por favor realizar la restrccion para que no se setee un 0 en el mismo indice para que no se quite el caballo
+    } else { 
       board[oldSelect.fila][oldSelect.col] = 0
       setBoard([...board])
       setOldSelect({ fila, col })
@@ -62,6 +68,7 @@ function App() {
 
   const backtrack = async (fila, col, pasos) => {
     const MOVIMIENTOS = [[-2,1], [-1,2], [1,2], [2,1], [2,-1], [1,-2], [-1,-2], [-2,-1]]
+    if (detener) return false
 
     if (pasos === size * size) {
       return true
@@ -72,19 +79,28 @@ function App() {
       let nueva_col = col + move[1]
 
       if (movimientoValido(nueva_fila, nueva_col)) {
-        board[nueva_fila][nueva_col] = 1
-        board[fila][col] = 2
+      if (detener) return false
+
+        
+        board[nueva_fila][nueva_col] = "x"
+        board[fila][col] = pasos + 1
         setBoard([...board])
 
-        await animacion(5)
+        await animacion(100)
 
         if (await backtrack(nueva_fila, nueva_col, pasos + 1)) {
           return true
         }
         
+        if (detener) return false
+
+        board[nueva_fila][nueva_col] = "e"
+        setBoard([...board])
+        await animacion(100)
+        
         board[nueva_fila][nueva_col] = 0
-        board[fila][col] = 1
-        await animacion(5)
+        board[fila][col] = "x"
+        await animacion(100)
         setBoard([...board])
       }
     }
@@ -93,8 +109,10 @@ function App() {
 
   const getClaseCelda = (val) => {
     if (val === 0) return ''
-    if (val === 1) return 'caballo-pos'
-    return `move-${val}`
+    if (val === "x") return 'caballo-pos'
+    if (val === "e")  return 'error'
+    return 'paso'
+    
   }
 
   if (showBoard) {
@@ -110,7 +128,7 @@ function App() {
                     <td key={ci} 
                       className={getClaseCelda(col)} 
                       onClick={() => seleccionarTablero(i, ci)}>
-                      {col === 0 ? '' : col === 1 ? (<img src={caballoIcon} alt="caballo" className='caballo-icon' />) : col}
+                      {col === 0 ? '' : col === "x" ? (<img src={caballoIcon} alt="caballo" className='caballo-icon' />) : col}
                     </td>
                   ))}
                 </tr>
@@ -122,11 +140,21 @@ function App() {
           if (actualSelect) {
             if (enCurso) return
             
+            detener = false
             setEnCurso(true)
-            backtrack(actualSelect.fila, actualSelect.col, 1)
-            
+            backtrack(actualSelect.fila, actualSelect.col, 0)
           }
         }}>Resolver</button>
+        <button className="parar-button" onClick={async() => {
+          detener = true
+          setEnCurso(false)
+
+          const newBoard = crearBoard(size)
+          setOldSelect(null)
+          setActualSelect(null)
+          await animacion(210)
+          setBoard(newBoard)
+        }}> Detener programa </button>
         <button className="volver-button" onClick={() => {
           setShowBoard(false)
           setSize(0)

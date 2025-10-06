@@ -336,10 +336,8 @@ h1 {
 .button-container button:nth-child(3) { animation-delay: 0.3s; }
 .button-container button:nth-child(4) { animation-delay: 0.4s; }
 
-.board td.move-1 { background-color: #4dabf7 !important; color: white !important; }
-.board td.move-2 { background-color: #51cf66 !important; color: white !important; }
-.board td.move-3 { background-color: #ffd43b !important; color: black !important; }
-.board td.move-4 { background-color: #ff8787 !important; color: white !important; }
+.board td.paso { background-color: #51cf66 !important; color: white !important; }
+.board td.error { background-color: #ff8787 !important; color: white !important; }
 
 @media (max-width: 600px) {
   .button-container {
@@ -357,3 +355,32 @@ h1 {
   }
 }
 
+.parar-button {
+  display: block;
+  margin: 20px auto;
+  padding: 12px 24px;
+  background: linear-gradient(145deg, #f39c12, #e67e22);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 12px rgba(243, 156, 18, 0.3),
+              inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 120px;
+}
+
+.parar-button:hover {
+  transform: translateY(-2px) scale(1.03);
+  background: linear-gradient(145deg, #e67e22, #f39c12);
+  box-shadow: 0 8px 16px rgba(243, 156, 18, 0.4);
+}
+
+.parar-button:active {
+  transform: translateY(-1px) scale(1.01);
+  box-shadow: 0 4px 8px rgba(243, 156, 18, 0.3);
+}
